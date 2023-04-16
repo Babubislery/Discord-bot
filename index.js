@@ -10,20 +10,36 @@ const client = new Client({
   ],
 });
 
+// const prefix = '-';
+
 client.on('ready', () => {
   console.log('The bot is online!');
 });
+
+
+// client.on('messageCreate', msg=>{
+//   if (msg.content.startsWith(prefix) || msg.author.bot) return;
+
+//   const args = msg.content.slice(prefix.length).split(/ +/);
+//   const  command  = args.shift().toLocaleLowerCase();
+
+//     if (command === 'chat'){
+//       msg.channel.send()
+//     }
+// })
 
 const configuration = new Configuration({
   apiKey: process.env.openai_api,
 });
 const openai = new OpenAIApi(configuration);
 
+
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   if (message.channel.id !== process.env.channelid) return;
   if (message.content.startsWith('!')) return;
 
+  
   let conversationLog = [{ role: 'system', content: 'You are a friendly chatbot.' }];
 
   try {
@@ -43,8 +59,7 @@ client.on('messageCreate', async (message) => {
       });
     });
 
-    const result = await openai
-      .createChatCompletion({
+    const result = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: conversationLog,
         // max_tokens: 256, // limit token usage
